@@ -1,88 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Budgie Launcher</title>
-  <link rel="stylesheet" href="Stylesheet.html">
-  <script src="js/Config.js"></script>
-  <style>
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #f4f4f4;
-      margin: 0;
-      padding: 0;
-    }
-    header {
-      background-color: #2c3e50;
-      color: white;
-      padding: 1rem;
-      text-align: center;
-    }
-    main {
-      padding: 2rem;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-    .launcher-button {
-      background-color: #3498db;
-      color: white;
-      border: none;
-      padding: 1rem 2rem;
-      margin: 1rem;
-      font-size: 1.1rem;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: background-color 0.3s;
-    }
-    .launcher-button:hover {
-      background-color: #2980b9;
-    }
-    footer {
-      text-align: center;
-      margin-top: 3rem;
-      font-size: 0.9rem;
-      color: #777;
-    }
-  </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Budgie - Family Budgeting</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+  <script defer src="js/Config.js"></script>
+  <script defer>
+    document.addEventListener("DOMContentLoaded", () => {
+      const container = document.getElementById("form-links");
+
+      const createButton = (label, url) => {
+        const a = document.createElement("a");
+        a.href = url;
+        a.target = "_blank";
+        a.className = "block w-full sm:w-auto bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 m-2 rounded shadow text-center";
+        a.textContent = label;
+        return a;
+      };
+
+      const formMap = [
+        { key: "FORM_EXPENSE_ID", label: "Quick Expense Entry" },
+        { key: "FORM_LOAN_EXISTING_ID", label: "New Loan - Existing Borrower" },
+        { key: "FORM_LOAN_NEW_ID", label: "New Loan - New Borrower" },
+        { key: "FORM_REPAYMENT_ID", label: "Loan Repayment" },
+      ];
+
+      formMap.forEach(({ key, label }) => {
+        const formId = BudgieConfig[key];
+        if (formId) {
+          const url = `https://docs.google.com/forms/d/e/${formId}/viewform`;
+          container.appendChild(createButton(label, url));
+        }
+      });
+
+      const dashBtn = createButton("View Dashboard", BudgieConfig.SCRIPT_WEBAPP_URL);
+      container.appendChild(dashBtn);
+    });
+  </script>
 </head>
-<body>
-  <header>
-    <h1>Welcome to Budgie</h1>
-    <p>A family budgeting companion</p>
+<body class="bg-gray-100 text-gray-800">
+  <header class="bg-gray-800 text-white py-6">
+    <h1 class="text-3xl text-center font-bold">Welcome to Budgie</h1>
+    <p class="text-center text-sm">A family budgeting companion</p>
   </header>
 
-  <main id="launcher-buttons">
-    <!-- Buttons will be inserted here dynamically -->
+  <main class="max-w-4xl mx-auto px-4 py-8">
+    <div id="form-links" class="flex flex-wrap justify-center"></div>
   </main>
 
-  <footer>
-    <p>Budgie &copy; 2025 — A project by David & ChatGPT</p>
+  <footer class="text-center text-xs text-gray-500 py-4">
+    Budgie © 2025 — A project by David & ChatGPT
   </footer>
-
-  <script>
-    function createButton(label, url) {
-      const btn = document.createElement('button');
-      btn.textContent = label;
-      btn.className = 'launcher-button';
-      btn.onclick = () => window.open(url, '_blank');
-      return btn;
-    }
-
-    function loadLaunchers() {
-      const container = document.getElementById('launcher-buttons');
-
-      const entries = Object.entries(CONFIG || {});
-      for (const [key, value] of entries) {
-        if (key.startsWith('FORM_')) {
-          const label = key.replace('FORM_', '').replaceAll('_', ' ').toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
-          container.appendChild(createButton(label, value));
-        }
-      }
-    }
-
-    loadLaunchers();
-  </script>
 </body>
 </html>
