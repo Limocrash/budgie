@@ -26,7 +26,8 @@
         container.appendChild(greeting);
 
         for (const key in linkMap) {
-          const url = CONFIG[key];
+          const url = BUDGIE_CONFIG[key];
+
           if (url && url.startsWith("http")) {
             const link = document.createElement("a");
             link.href = url;
@@ -109,7 +110,7 @@
 
     <footer>
       Budgie © 2025 — A project by David & ChatGPT<br />
-      Version 0.1.1
+      Version 0.1.2
     </footer>
   </body>
 </html>
