@@ -18,6 +18,13 @@
 
         const container = document.getElementById("linkContainer");
 
+        // Add debug greeting
+        const greeting = document.createElement("p");
+        greeting.textContent = "Hello Link'n Ill — initializing links...";
+        greeting.style.fontStyle = "italic";
+        greeting.style.color = "#666";
+        container.appendChild(greeting);
+
         for (const key in linkMap) {
           const url = CONFIG[key];
           if (url && url.startsWith("http")) {
@@ -102,7 +109,7 @@
 
     <footer>
       Budgie © 2025 — A project by David & ChatGPT<br />
-      Version 0.1.0
+      Version 0.1.1
     </footer>
   </body>
 </html>
