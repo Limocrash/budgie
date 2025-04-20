@@ -3,43 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Budgie</title>
+    <title>Budgie</n    ></title>
     <script src="js/Config.js"></script>
+    <script src="js/app.js"></script>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap">
-    <script>
-      document.addEventListener("DOMContentLoaded", () => {
-        const linkMap = {
-          FORM_EXPENSE_ID: "Quick Expense Entry",
-          FORM_LOAN_EXISTING_ID: "New Loan – Existing Borrower",
-          FORM_LOAN_NEW_ID: "New Loan – New Borrower",
-          FORM_REPAYMENT_ID: "Loan Repayment",
-          VIEW_EXPENSES: "Recent Entries",
-          SCRIPT_WEBAPP_URL: "View Dashboard",
-        };
-
-        const container = document.getElementById("linkContainer");
-
-        // Add debug greeting
-        const greeting = document.createElement("p");
-        greeting.textContent = "Hello Link'n Ill — initializing links...";
-        greeting.style.fontStyle = "italic";
-        greeting.style.color = "#666";
-        container.appendChild(greeting);
-
-        for (const key in linkMap) {
-          const url = BUDGIE_CONFIG[key];
-
-          if (url && url.startsWith("http")) {
-            const link = document.createElement("a");
-            link.href = url;
-            link.target = "_blank";
-            link.textContent = linkMap[key];
-            link.className = "link-tile";
-            container.appendChild(link);
-          }
-        }
-      });
-    </script>
     <style>
       body {
         font-family: 'Inter', sans-serif;
@@ -97,6 +64,19 @@
         transform: translateY(-2px);
         box-shadow: 0 4px 12px rgba(0,0,0,0.1);
       }
+      .controls {
+        margin-top: 1.5rem;
+        display: flex;
+        gap: 1rem;
+      }
+      .controls label {
+        font-size: 0.875rem;
+        color: #333;
+      }
+      .totals {
+        margin-top: 1rem;
+        font-weight: 600;
+      }
     </style>
   </head>
   <body>
@@ -107,11 +87,20 @@
 
     <main>
       <div id="linkContainer" class="link-grid"></div>
+
+      <div class="controls">
+        <label>From <input type="date" id="startDate"></label>
+        <label>To   <input type="date" id="endDate"></label>
+        <button id="refresh">Refresh</button>
+      </div>
+    
+      <div id="tableContainer"></div>
+      <div id="totals" class="totals"></div>
     </main>
 
     <footer>
       Budgie © 2025 — A project by David & ChatGPT<br />
-      Version 0.1.5 (Config.js)
+      Version 0.1.6 (Performance)
     </footer>
   </body>
 </html>
