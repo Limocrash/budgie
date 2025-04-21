@@ -17,12 +17,6 @@ document.addEventListener("DOMContentLoaded", () => {
       SCRIPT_WEBAPP_URL:      "View Dashboard"
     };
     const container = document.getElementById("linkContainer");
-    // debug greeting
-    const greet = document.createElement("p");
-    greet.textContent = "Hello Link'n Ill — initializing links...";
-    greet.style.fontStyle = "italic";
-    greet.style.color = "#666";
-    container.appendChild(greet);
   
     Object.entries(linkMap).forEach(([key, label]) => {
       const url = BUDGIE_CONFIG[key];

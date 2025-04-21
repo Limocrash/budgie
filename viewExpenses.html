@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>View Expenses</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap">
+  <link rel="stylesheet" href="style.css" />
+  <script src="js/Config.js" defer></script>
+  <script src="js/viewExpenses.js" defer></script>
+</head>
+<body>
+  <header>
+    <h1>Recent Expenses</h1>
+    <p>Select a date range below to filter your transactions.</p>
+  </header>
+
+  <main>
+    <div class="controls">
+      <label>From <input type="date" id="startDate" /></label>
+      <label>To <input type="date" id="endDate" /></label>
+      <button id="refreshBtn">Refresh</button>
+    </div>
+
+    <div id="tableContainer"></div>
+    <div id="totals" class="totals"></div>
+  </main>
+
+  <footer>
+    Budgie © 2025 — A project by David & ChatGPT<br />
+    Version 0.1.9 – View CSV Page
+  </footer>
+</body>
+</html>
