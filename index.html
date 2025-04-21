@@ -102,5 +102,73 @@
       Budgie © 2025 — A project by David & ChatGPT<br />
       Version 0.1.7 (ExpensesView controls compatibility)
     </footer>
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const csvUrl = CONFIG.VIEW_EXPENSES_CSV;
+        const startInput = document.getElementById('startDate');
+        const endInput   = document.getElementById('endDate');
+        const tableBox   = document.getElementById('tableContainer');
+        const totalsBox  = document.getElementById('totals');
+      
+        // default last 30 days
+        const today = new Date().toISOString().slice(0,10);
+        const prior = new Date(Date.now() - 30*24*60*60*1000)
+                        .toISOString().slice(0,10);
+        startInput.value = prior;
+        endInput.value   = today;
+      
+        async function refresh() {
+          const [from, to] = [new Date(startInput.value), new Date(endInput.value)];
+          tableBox.innerHTML = 'Loading…';
+          const resp = await fetch(csvUrl);
+          const text = await resp.text();
+          // parse CSV
+          const rows = text.trim().split('\n').map(r => r.split(','));
+          const header = rows.shift();
+          // build filtered rows
+          const data = rows
+            .map(r => ({
+              date: new Date(r[0]),    // Date col
+              amt:  parseFloat(r[1]),
+              desc: r[2],
+              cat:  r[3]
+            }))
+            .filter(o => o.date >= from && o.date <= to)
+            .sort((a,b) => b.date - a.date);
+      
+          // render table
+          if (!data.length) {
+            tableBox.innerHTML = '<em>No records</em>';
+            totalsBox.textContent = '';
+            return;
+          }
+          let html = '<table><thead><tr>';
+          ['Date','Amount','Description','Category']
+            .forEach(h => html += `<th>${h}</th>`);
+          html += '</tr></thead><tbody>';
+          let sum=0;
+          data.forEach(o => {
+            html += `<tr>
+              <td>${o.date.toLocaleDateString()}</td>
+              <td style="text-align:right">${o.amt.toFixed(2)}</td>
+              <td>${o.desc}</td>
+              <td>${o.cat}</td>
+            </tr>`;
+            sum += o.amt;
+          });
+          html += '</tbody></table>';
+          tableBox.innerHTML = html;
+          totalsBox.textContent = 
+            `Showing ${data.length} transactions — Total ₱${sum.toFixed(2)}`;
+        }
+      
+        document.getElementById('refresh')
+          .addEventListener('click', refresh);
+      
+        // initial load
+        refresh();
+      });
+      </script>
+      
   </body>
 </html>
