@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", () => {
       FORM_LOAN_EXISTING_ID: "New Loan – Existing Borrower",
       FORM_LOAN_NEW_ID:       "New Loan – New Borrower",
       FORM_REPAYMENT_ID:      "Loan Repayment",
-      VIEW_EXPENSES:          "Recent Entries",
+      VIEW_EXPENSES_CSV:      "View Selected Entries",
       SCRIPT_WEBAPP_URL:      "View Dashboard"
     };
     const container = document.getElementById("linkContainer");
