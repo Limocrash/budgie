@@ -64,19 +64,31 @@
         transform: translateY(-2px);
         box-shadow: 0 4px 12px rgba(0,0,0,0.1);
       }
+      
       .controls {
-        margin-top: 1.5rem;
-        display: flex;
-        gap: 1rem;
-      }
-      .controls label {
-        font-size: 0.875rem;
-        color: #333;
-      }
-      .totals {
-        margin-top: 1rem;
-        font-weight: 600;
-      }
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+#tableContainer table {
+  border-collapse: collapse;
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+}
+#tableContainer th, #tableContainer td {
+  border: 1px solid #ccc;
+  padding: .5rem;
+}
+.totals {
+  text-align: center;
+  margin-top: .5rem;
+  font-weight: 600;
+}
+
+    
     </style>
   </head>
   <body>
