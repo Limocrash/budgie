@@ -1,16 +1,12 @@
-<!-- Filename: viewExpenses.html -->
+<!-- viewExpenses.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>View Expenses</title>
-
-  <!-- Font & CSS styling -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap">
   <link rel="stylesheet" href="style.css" />
-
-  <!-- Config with CSV URL and script to render expenses -->
   <script src="js/Config.js" defer></script>
   <script src="js/viewExpenses.js" defer></script>
 </head>
@@ -21,23 +17,19 @@
   </header>
 
   <main>
-    <!-- Date filter controls -->
     <div class="controls">
       <label>From <input type="date" id="startDate" /></label>
       <label>To <input type="date" id="endDate" /></label>
       <button id="refreshBtn">Refresh</button>
     </div>
 
-    <!-- Populated by JS -->
     <div id="tableContainer"></div>
-
-    <!-- Populated with total PHP value -->
     <div id="totals" class="totals"></div>
   </main>
 
   <footer>
     Budgie © 2025 — A project by David & ChatGPT<br />
-    Version 0.1.10 – CSV Viewer
+    Version 0.1.10.2 – View CSV-driven HTML Page
   </footer>
 </body>
 </html>
