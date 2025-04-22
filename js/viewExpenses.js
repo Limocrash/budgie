@@ -1,6 +1,10 @@
 // viewExpenses.js
 // Fetches Google Sheets data via Visualization API and renders dynamic table with date filter
 // Version 0.1.10.5 fixed fetch issue and confirmed event listener
+// ⛔ TEMP INLINE CONFIG – replaces Config.js while debugging
+window.BUDGIE_CONFIG = {
+  "VIEW_EXPENSES_CSV": "https://docs.google.com/spreadsheets/d/1AStIoowJuZX2enGOCrvLwnG4F4Ypg9VK5NZp-oDE8yo/gviz/tq?tqx=out:csv&sheet=Form%20Responses%206"
+};
 
 window.addEventListener("DOMContentLoaded", async () => {
   const startDateInput = document.getElementById("startDate");
