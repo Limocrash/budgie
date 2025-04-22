@@ -1,9 +1,8 @@
 // viewExpenses.js
-// Fetches Google Sheets data via Visualization API and renders dynamic table with date filter
-// Version 0.1.10.5 fixed fetch issue and confirmed event listener
-// ⛔ TEMP INLINE CONFIG – replaces Config.js while debugging
+// Version 0.1.11 - fetches and filters CSV data by date range, no JSON involved
+// ⛔ TEMP INLINE CONFIG – for testing loading order
 window.BUDGIE_CONFIG = {
-  "VIEW_EXPENSES_CSV": "https://docs.google.com/spreadsheets/d/1AStIoowJuZX2enGOCrvLwnG4F4Ypg9VK5NZp-oDE8yo/gviz/tq?tqx=out:csv&sheet=Form%20Responses%206"
+  VIEW_EXPENSES_CSV: "https://docs.google.com/spreadsheets/d/1AStIoowJuZX2enGOCrvLwnG4F4Ypg9VK5NZp-oDE8yo/gviz/tq?tqx=out:csv&sheet=Form%20Responses%206"
 };
 
 window.addEventListener("DOMContentLoaded", async () => {
@@ -13,51 +12,47 @@ window.addEventListener("DOMContentLoaded", async () => {
   const tableContainer = document.getElementById("tableContainer");
   const totalsContainer = document.getElementById("totals");
 
-  const configUrl = window.BUDGIE_CONFIG?.VIEW_EXPENSES_CSV;
-  console.log("✅ VIEW_EXPENSES_CSV URL:", configUrl);
+  const configUrl = "https://docs.google.com/spreadsheets/d/1AStIoowJuZX2enGOCrvLwnG4F4Ypg9VK5NZp-oDE8yo/gviz/tq?tqx=out:csv&sheet=Form%20Responses%206";
+  console.log("✅ Using hardcoded CSV URL:", configUrl);
 
-  if (!configUrl) {
-    tableContainer.textContent = "Missing VIEW_EXPENSES_CSV URL in Config.js";
-    return;
-  }
+  const parseCSV = (text) => {
+    return text
+      .trim()
+      .split("\n")
+      .map(line => line.split(",").map(cell => cell.replace(/^"|"$/g, "").trim()));
+  };
 
   const loadData = async () => {
     try {
       const response = await fetch(configUrl);
-      const text = await response.text();
-      const json = JSON.parse(text.substring(47).slice(0, -2));
+      const csvText = await response.text();
+      const data = parseCSV(csvText);
 
-      const rows = json.table.rows.map(row => row.c.map(cell => (cell ? cell.v : "")));
-      const headers = json.table.cols.map(col => col.label || "");
-      console.log("✅ Parsed headers:", headers);
-      console.log("✅ Row count:", rows.length);
+      const headers = data[0];
+      const rows = data.slice(1);
 
-      const data = [headers, ...rows];
+      const dateCol = headers.findIndex(h => h.toLowerCase() === "date");
+      const amountCol = headers.findIndex(h => h.toLowerCase() === "amount");
 
-      // Get date range from input
-      const startDate = new Date(startDateInput.value);
-      const endDate = new Date(endDateInput.value);
-
-      const dateColIndex = headers.findIndex(h => h.toLowerCase() === "date");
-      const amountColIndex = headers.findIndex(h => h.toLowerCase() === "amount");
-
-      if (dateColIndex === -1 || amountColIndex === -1) {
-        tableContainer.innerHTML = "<p>Error: Missing 'Date' or 'Amount' column.</p>";
+      if (dateCol === -1 || amountCol === -1) {
+        tableContainer.innerHTML = "<p>Error: Missing 'Date' or 'Amount' column in CSV.</p>";
         return;
       }
 
+      const start = new Date(startDateInput.value);
+      const end = new Date(endDateInput.value);
+
       const filtered = rows.filter(row => {
-        const rowDate = new Date(row[dateColIndex]);
-        return rowDate >= startDate && rowDate <= endDate;
+        const date = new Date(row[dateCol]);
+        return date >= start && date <= end;
       });
 
-      // Render table
       const table = document.createElement("table");
       const thead = document.createElement("thead");
       const headerRow = document.createElement("tr");
-      headers.forEach(h => {
+      headers.forEach(header => {
         const th = document.createElement("th");
-        th.textContent = h;
+        th.textContent = header;
         headerRow.appendChild(th);
       });
       thead.appendChild(headerRow);
@@ -78,11 +73,12 @@ window.addEventListener("DOMContentLoaded", async () => {
       tableContainer.innerHTML = "";
       tableContainer.appendChild(table);
 
-      // Calculate and display total amount
-      const total = filtered.reduce((sum, row) => sum + (parseFloat(row[amountColIndex]) || 0), 0);
-      totalsContainer.innerHTML = `<strong>Total Amount:</strong> ${total.toLocaleString(undefined, {
-        style: 'currency', currency: 'PHP'
-      })}`;
+      const total = filtered.reduce((sum, row) => {
+        const val = parseFloat(row[amountCol]);
+        return sum + (isNaN(val) ? 0 : val);
+      }, 0);
+
+      totalsContainer.innerHTML = `<strong>Total Amount:</strong> ₱${total.toLocaleString()}`;
     } catch (err) {
       console.error("❌ Error loading CSV:", err);
       tableContainer.innerHTML = `<p>Error loading data: ${err.message}</p>`;
@@ -91,11 +87,8 @@ window.addEventListener("DOMContentLoaded", async () => {
 
   refreshBtn.addEventListener("click", loadData);
 
-  // Default to current month
   const now = new Date();
   startDateInput.value = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split("T")[0];
   endDateInput.value = now.toISOString().split("T")[0];
-
-  // Load initial data
   await loadData();
 });
