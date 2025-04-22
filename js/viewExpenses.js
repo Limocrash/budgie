@@ -1,7 +1,7 @@
 // viewExpenses.js
 // Fetches Google Sheets data via Visualization API and renders dynamic table with date filter
-// Version 1.10.4 changed fetch process for CSV data
-// Wait for DOM to be ready
+// Version 0.1.10.5 fixed fetch issue and confirmed event listener
+
 window.addEventListener("DOMContentLoaded", async () => {
   const startDateInput = document.getElementById("startDate");
   const endDateInput = document.getElementById("endDate");
@@ -90,5 +90,8 @@ window.addEventListener("DOMContentLoaded", async () => {
   // Default to current month
   const now = new Date();
   startDateInput.value = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split("T")[0];
-  endDateInput.value = now.toISOString().split
-})
+  endDateInput.value = now.toISOString().split("T")[0];
+
+  // Load initial data
+  await loadData();
+});
