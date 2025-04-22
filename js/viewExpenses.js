@@ -1,86 +1,67 @@
 // viewExpenses.js
-// Loads Form Responses 6 CSV and filters by date range from user input
 
-// --- Constants and Setup ---
-const csvUrl = BUDGIE_CONFIG["VIEW_EXPENSES_CSV"];
-const tableContainer = document.getElementById("tableContainer");
-const totalsDiv = document.getElementById("totals");
-const refreshBtn = document.getElementById("refreshBtn");
+// Loads and filters the published expenses CSV into a table
 
-refreshBtn.addEventListener("click", () => {
-  const startDate = document.getElementById("startDate").value;
-  const endDate = document.getElementById("endDate").value;
-
-  if (!startDate || !endDate) {
-    alert("Please select both start and end dates.");
-    return;
-  }
-
-  fetchAndDisplayExpenses(startDate, endDate);
-});
-
-async function fetchAndDisplayExpenses(startDate, endDate) {
-  try {
-    const response = await fetch(csvUrl);
-    const csvText = await response.text();
-    const rows = parseCSV(csvText);
-
-    const headers = rows[0];
-    const dataRows = rows.slice(1);
-
-    const filteredRows = dataRows.filter(row => {
-      const rowDate = new Date(row[1]); // Column B is 'Date'
-      return rowDate >= new Date(startDate) && rowDate <= new Date(endDate);
-    });
-
-    renderTable(headers, filteredRows);
-    displayTotal(filteredRows);
-  } catch (err) {
-    console.error("Error loading CSV:", err);
-    tableContainer.innerHTML = "<p style='color:red;'>Failed to load data.</p>";
-  }
-}
-
-function renderTable(headers, rows) {
-  const table = document.createElement("table");
-  table.classList.add("data-table");
-
-  const thead = document.createElement("thead");
-  const headerRow = document.createElement("tr");
-  headers.forEach(h => {
-    const th = document.createElement("th");
-    th.textContent = h;
-    headerRow.appendChild(th);
+document.addEventListener("DOMContentLoaded", () => {
+    const csvUrl = BUDGIE_CONFIG["VIEW_EXPENSES_CSV"];
+    const tableContainer = document.getElementById("tableContainer");
+    const totalsContainer = document.getElementById("totals");
+    const refreshButton = document.getElementById("refresh");
+  
+    refreshButton.addEventListener("click", loadAndFilterData);
+    loadAndFilterData();
+  
+    async function loadAndFilterData() {
+      const start = document.getElementById("startDate").value;
+      const end = document.getElementById("endDate").value;
+      const response = await fetch(csvUrl);
+      const text = await response.text();
+      const rows = parseCSV(text);
+  
+      const [header, ...data] = rows;
+      const filtered = filterByDate(data, start, end);
+  
+      renderTable([header, ...filtered]);
+      showTotals(filtered);
+    }
+  
+    function parseCSV(text) {
+      return text.trim().split("\n").map(row => row.split(","));
+    }
+  
+    function filterByDate(rows, startDate, endDate) {
+      if (!startDate || !endDate) return rows;
+  
+      const start = new Date(startDate);
+      const end = new Date(endDate);
+  
+      return rows.filter(row => {
+        const rowDate = new Date(row[0]); // Assumes column 0 is the date
+        return rowDate >= start && rowDate <= end;
+      });
+    }
+  
+    function renderTable(rows) {
+      const table = document.createElement("table");
+      table.innerHTML = "";
+  
+      rows.forEach((row, index) => {
+        const tr = document.createElement("tr");
+        row.forEach(cell => {
+          const td = document.createElement(index === 0 ? "th" : "td");
+          td.textContent = cell;
+          tr.appendChild(td);
+        });
+        table.appendChild(tr);
+      });
+  
+      tableContainer.innerHTML = "";
+      tableContainer.appendChild(table);
+    }
+  
+    function showTotals(rows) {
+      const total = rows.reduce((sum, row) => sum + parseFloat(row[2] || 0), 0);
+      totalsContainer.textContent = `Total: ₱${total.toFixed(2)}`;
+    }
   });
-  thead.appendChild(headerRow);
-  table.appendChild(thead);
-
-  const tbody = document.createElement("tbody");
-  rows.forEach(row => {
-    const tr = document.createElement("tr");
-    row.forEach(cell => {
-      const td = document.createElement("td");
-      td.textContent = cell;
-      tr.appendChild(td);
-    });
-    tbody.appendChild(tr);
-  });
-  table.appendChild(tbody);
-
-  tableContainer.innerHTML = "";
-  tableContainer.appendChild(table);
-}
-
-function displayTotal(rows) {
-  const total = rows.reduce((sum, row) => {
-    const amount = parseFloat(row[2]); // Column C is 'Amount'
-    return isNaN(amount) ? sum : sum + amount;
-  }, 0);
-
-  totalsDiv.textContent = `Total Amount: ₱${total.toFixed(2)}`;
-}
-
-function parseCSV(text) {
-  const rows = text.trim().split(/\r?\n/);
-  return rows.map(line => line.split(","));
-}
+  
