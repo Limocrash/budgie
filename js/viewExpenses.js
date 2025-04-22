@@ -91,3 +91,4 @@ window.addEventListener("DOMContentLoaded", async () => {
   const now = new Date();
   startDateInput.value = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split("T")[0];
   endDateInput.value = now.toISOString().split
+})
