@@ -7,5 +7,6 @@ const BUDGIE_CONFIG = {
   "BUDGIE_SITE_URL": "https://limocrash.github.io/budgie",
   "SCRIPT_WEBAPP_URL": "https://docs.google.com/spreadsheets/d/1AStIoowJuZX2enGOCrvLwnG4F4Ypg9VK5NZp-oDE8yo/edit?usp=sharing",
   "VIEW_EXPENSES": "https://docs.google.com/spreadsheets/d/e/2PACX-1vRK73zqWFd7Wr4owrfwOocMWBQfRD5uCulUasdqGtVAYUnLXGcL71vgMXFKPCbXs_UWuj8pG4Izh0bm/pubhtml?gid=439769693&single=true",
-  "VIEW_EXPENSES_CSV": "https://docs.google.com/spreadsheets/d/1AStIoowJuZX2enGOCrvLwnG4F4Ypg9VK5NZp-oDE8yo/gviz/tq?tqx=out:csv&sheet=Form%20Responses%206"
+  "VIEW_EXPENSES_CSV": "https://docs.google.com/spreadsheets/d/1AStIoowJuZX2enGOCrvLwnG4F4Ypg9VK5NZp-oDE8yo/gviz/tq?tqx=out:csv&sheet=Form%20Responses%206",
+  "VIEW_EXPENSES_PAGE": "https://limocrash.github.io/budgie/viewExpenses.html"
 };
