@@ -1,5 +1,5 @@
 // viewExpenses.js
-// Version 0.1.11.3b – Adds default date values (first of month to today) and ensures Refresh triggers table reload
+// Version 0.1.11.3c – Adds default date values (first of month to today) and ensures Refresh triggers table reload
 // ⛔ TEMP INLINE CONFIG – for testing loading order
 window.BUDGIE_CONFIG = {
   VIEW_EXPENSES_CSV: "https://docs.google.com/spreadsheets/d/1AStIoowJuZX2enGOCrvLwnG4F4Ypg9VK5NZp-oDE8yo/gviz/tq?tqx=out:csv&sheet=Form%20Responses%206"
