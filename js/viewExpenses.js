@@ -1,9 +1,16 @@
 // viewExpenses.js
-// Version 0.1.11.3d - adds row numbers, clickable receipt links, preps for mobile-responsive layout
-// ⛔ TEMP INLINE CONFIG – for testing loading order
+// Version 0.1.14.1 – Fixes default date formatting using local time and supports clearer sorting logic setup.
+// TEMP INLINE CONFIG – Included inline for testing purposes; remove or centralize when stable.
 window.BUDGIE_CONFIG = {
   VIEW_EXPENSES_CSV: "https://docs.google.com/spreadsheets/d/1AStIoowJuZX2enGOCrvLwnG4F4Ypg9VK5NZp-oDE8yo/gviz/tq?tqx=out:csv&sheet=Form%20Responses%206"
 };
+
+// Utility: Convert Date object to yyyy-mm-dd using local time instead of UTC
+function toDateInputValue(date) {
+  const offset = date.getTimezoneOffset();
+  const localDate = new Date(date.getTime() - (offset * 60000));
+  return localDate.toISOString().split("T")[0];
+}
 
 window.addEventListener("DOMContentLoaded", async () => {
   const startDateInput = document.getElementById("startDate");
@@ -28,12 +35,12 @@ window.addEventListener("DOMContentLoaded", async () => {
       const csvText = await response.text();
       const data = parseCSV(csvText);
 
-      const headers = ["#", ...data[0]]; // Add row number column
+      const headers = data[0];
       const rows = data.slice(1);
 
       const dateCol = headers.findIndex(h => h.toLowerCase() === "date");
       const amountCol = headers.findIndex(h => h.toLowerCase() === "amount");
-      const photoCol = headers.findIndex(h => h.toLowerCase().includes("photo"));
+      const receiptCol = headers.findIndex(h => h.toLowerCase().includes("photo"));
 
       if (dateCol === -1 || amountCol === -1) {
         tableContainer.innerHTML = "<p>Error: Missing 'Date' or 'Amount' column in CSV.</p>";
@@ -44,13 +51,19 @@ window.addEventListener("DOMContentLoaded", async () => {
       const end = new Date(endDateInput.value);
 
       const filtered = rows.filter(row => {
-        const date = new Date(row[dateCol - 1]); // Adjusted for row number offset
+        const date = new Date(row[dateCol]);
         return date >= start && date <= end;
       });
 
       const table = document.createElement("table");
       const thead = document.createElement("thead");
       const headerRow = document.createElement("tr");
+
+      // Add row number column header
+      const rowNumTh = document.createElement("th");
+      rowNumTh.textContent = "#";
+      headerRow.appendChild(rowNumTh);
+
       headers.forEach(header => {
         const th = document.createElement("th");
         th.textContent = header;
@@ -62,20 +75,20 @@ window.addEventListener("DOMContentLoaded", async () => {
       const tbody = document.createElement("tbody");
       filtered.forEach((row, index) => {
         const tr = document.createElement("tr");
-        tr.className = index % 2 === 0 ? "even" : "odd";
 
-        const rowNum = document.createElement("td");
-        rowNum.textContent = index + 1;
-        tr.appendChild(rowNum);
+        // Add row number cell
+        const rowNumTd = document.createElement("td");
+        rowNumTd.textContent = index + 1;
+        tr.appendChild(rowNumTd);
 
         row.forEach((cell, colIndex) => {
           const td = document.createElement("td");
-          if (colIndex === photoCol - 1 && cell.startsWith("http")) {
-            const link = document.createElement("a");
-            link.href = cell;
-            link.textContent = "View Photo";
-            link.target = "_blank";
-            td.appendChild(link);
+          if (colIndex === receiptCol && cell.includes("http")) {
+            const a = document.createElement("a");
+            a.href = cell;
+            a.textContent = "View Photo";
+            a.target = "_blank";
+            td.appendChild(a);
           } else {
             td.textContent = cell;
           }
@@ -89,7 +102,7 @@ window.addEventListener("DOMContentLoaded", async () => {
       tableContainer.appendChild(table);
 
       const total = filtered.reduce((sum, row) => {
-        const val = parseFloat(row[amountCol - 1]);
+        const val = parseFloat(row[amountCol]);
         return sum + (isNaN(val) ? 0 : val);
       }, 0);
 
@@ -105,9 +118,11 @@ window.addEventListener("DOMContentLoaded", async () => {
     loadData();
   });
 
+  // Default date values: First of the month through today
   const now = new Date();
   const firstOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-  startDateInput.value = firstOfMonth.toISOString().split("T")[0];
-  endDateInput.value = now.toISOString().split("T")[0];
+  startDateInput.value = toDateInputValue(firstOfMonth);
+  endDateInput.value = toDateInputValue(now);
+
   await loadData();
 });
